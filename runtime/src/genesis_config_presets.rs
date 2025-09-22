@@ -21,8 +21,10 @@ use frame_support::build_struct_json_patch;
 use serde_json::Value;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_consensus_grandpa::AuthorityId as GrandpaId;
+use sp_core::crypto::Ss58Codec;
 use sp_genesis_builder::{self, PresetId};
 use sp_keyring::Sr25519Keyring;
+use sp_runtime::AccountId32;
 
 // Returns the genesis config presets populated with given parameters.
 fn testnet_genesis(
@@ -60,6 +62,7 @@ pub fn development_config_genesis() -> Value {
 			Sr25519Keyring::Bob.to_account_id(),
 			Sr25519Keyring::AliceStash.to_account_id(),
 			Sr25519Keyring::BobStash.to_account_id(),
+			AccountId32::from_ss58check("5FTQCv9ZYz6nWtkSsGMeusUNo2gbhwNsix2fQAZzGhKABAb6").unwrap(),
 		],
 		sp_keyring::Sr25519Keyring::Alice.to_account_id(),
 	)

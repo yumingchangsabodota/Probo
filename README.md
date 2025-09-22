@@ -74,15 +74,11 @@ flowchart TB
 ```rust
 /// Stores an issuance proof on the blockchain
 pub fn store_proof(
-    signed_message: Vec<u8>,     // The cryptographically signed message hash
-    public_key: Vec<u8>,         // The issuing entity's public key used for verification
-    expiration_block: BlockNumber // Block number when this proof expires
+    origin: OriginFor<T>, // The issuing entity's public key used for verification, should get from Origin<T>
+    proof: BoundedVec<u8, ConstU32<512>>,     // The cryptographically signed message hash
+    expiration: U256 // Block number in future when this proof expires
 ) -> DispatchResult
 
-/// Retrieves a stored proof from the blockchain using the signed message hash
-pub fn get_proof(
-    signed_message_hash: Vec<u8> // Hash of the signed message to lookup
-) -> Option<ProofData>
 ```
 
 
