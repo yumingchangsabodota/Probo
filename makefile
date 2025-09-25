@@ -15,7 +15,7 @@ build_benchmark:
 
 benchmark:
 	frame-omni-bencher v1 benchmark pallet \
-	--runtime ./target/release/wbuild/pba-runtime/pba_runtime.compact.compressed.wasm \
-	--pallet "pallet-multisig" \
+	--runtime ./target/release/wbuild/solochain-template-runtime/solochain_template_runtime.compact.compressed.wasm \
+	--pallet "pallet-issuance-proof" \
 	--extrinsic "" \
-	--output pallets/multisig/src/weights/multisig.rs
+	--output pallets/issuance-proof/src/weights/issuance-proof.rs

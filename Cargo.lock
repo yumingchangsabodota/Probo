@@ -6535,9 +6535,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "386c622773c64ba462fea05debe20d71b0caf5d273a6cdb8277a1ca853adfd1c"
 dependencies = [
  "docify",
+ "frame-benchmarking",
  "frame-executive",
  "frame-support",
  "frame-system",
+ "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "log",
  "parity-scale-codec",
