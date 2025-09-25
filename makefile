@@ -10,3 +10,12 @@ run_with_chain_state:
 purge_chain:
 	./target/release/solochain-template-node purge-chain --dev
 
+build_benchmark:
+	cargo build --release --features runtime-benchmarks
+
+benchmark:
+	frame-omni-bencher v1 benchmark pallet \
+	--runtime ./target/release/wbuild/pba-runtime/pba_runtime.compact.compressed.wasm \
+	--pallet "pallet-multisig" \
+	--extrinsic "" \
+	--output pallets/multisig/src/weights/multisig.rs
