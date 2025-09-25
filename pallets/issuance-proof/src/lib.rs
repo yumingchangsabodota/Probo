@@ -11,9 +11,9 @@ pub mod pallet {
     use super::*;
     use codec::MaxEncodedLen;
     use frame_support::traits::fungible;
-    use frame_support::traits::fungible::{Inspect, InspectHold, Mutate, MutateHold};
-    use frame_support::traits::tokens::{Fortitude, Precision, Preservation};
-    use frame_support::{pallet_prelude::*, StorageNMap};
+    use frame_support::traits::fungible::{Inspect, MutateHold};
+    use frame_support::traits::tokens::{Fortitude, Preservation};
+    use frame_support::{pallet_prelude::*};
     use frame_system::pallet_prelude::*;
     use sp_core::U256;
 
