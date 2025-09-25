@@ -42,10 +42,24 @@ impl<T: frame_system::Config> pallet_issuance_proof::WeightInfo for WeightInfo<T
 		// Proof Size summary in bytes:
 		//  Measured:  `103`
 		//  Estimated: `3593`
-		// Minimum execution time: 40_000_000 picoseconds.
-		Weight::from_parts(41_000_000, 0)
+		// Minimum execution time: 41_000_000 picoseconds.
+		Weight::from_parts(42_000_000, 0)
 			.saturating_add(Weight::from_parts(0, 3593))
 			.saturating_add(T::DbWeight::get().reads(2))
 			.saturating_add(T::DbWeight::get().writes(3))
+	}
+	/// Storage: `Proof::IssuanceProof` (r:1 w:1)
+	/// Proof: `Proof::IssuanceProof` (`max_values`: None, `max_size`: Some(594), added: 3069, mode: `MaxEncodedLen`)
+	/// Storage: `Proof::WhitelistEntity` (r:1 w:0)
+	/// Proof: `Proof::WhitelistEntity` (`max_values`: None, `max_size`: Some(49), added: 2524, mode: `MaxEncodedLen`)
+	fn store_proof() -> Weight {
+		// Proof Size summary in bytes:
+		//  Measured:  `78`
+		//  Estimated: `4059`
+		// Minimum execution time: 14_000_000 picoseconds.
+		Weight::from_parts(15_000_000, 0)
+			.saturating_add(Weight::from_parts(0, 4059))
+			.saturating_add(T::DbWeight::get().reads(2))
+			.saturating_add(T::DbWeight::get().writes(1))
 	}
 }
