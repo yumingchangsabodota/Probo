@@ -75,7 +75,7 @@ pub mod pallet {
             /// Expiry Block Number
             expiry_block: U256,
         },
-        /// When register as whitelist entity successfully
+        /// When register as whitelist entity is successful
         WhitelistEntityRegistered { entity: T::AccountId },
     }
 
@@ -83,7 +83,7 @@ pub mod pallet {
     pub enum Error<T> {
         /// When user tries to store the same proof.
         ProofAlreadyExist,
-        /// Emitted when user does not have enough fund for a operation.
+        /// Emitted when user does not have enough fund to hold for becoming a legitimate entity.
         NotEnoughFund,
         /// Not whitelist entity
         NotWhitelistEntity,
@@ -91,6 +91,8 @@ pub mod pallet {
 
     #[pallet::call]
     impl<T: Config> Pallet<T> {
+
+        /// Store proof on chain
         #[pallet::call_index(0)]
         #[pallet::weight(T::WeightInfo::do_something())]
         pub fn store_proof(
@@ -105,6 +107,7 @@ pub mod pallet {
             Ok(())
         }
 
+        /// Register to become legitimate entity to store proof on chain
         #[pallet::call_index(1)]
         #[pallet::weight(T::WeightInfo::do_something())]
         pub fn register_entity(origin: OriginFor<T>) -> DispatchResult {
@@ -129,8 +132,6 @@ pub mod pallet {
             // check is whitelisted entity
             Self::is_whitelist_entity(&issuer)?;
 
-            // check has enough fund for operation
-            Self::has_enough_balance(&issuer, 1_000_000u32.into())?;
             let current_block = frame_system::Pallet::<T>::block_number().into();
             let expiry_block = current_block + expiration;
             let proof_meta = ProofMeta {
@@ -149,7 +150,7 @@ pub mod pallet {
         }
 
         pub fn do_register_entity(issuer: T::AccountId) -> DispatchResult {
-            // ensure enough balance to lock
+            // ensure enough balance to hold
             Self::has_enough_balance(&issuer, 1_000_000_000u32.into())?;
             // hold funds
             T::Balance::hold(
