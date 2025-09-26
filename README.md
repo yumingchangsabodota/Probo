@@ -15,3 +15,5 @@ Read the [overview](OVERVIEW.md) for the background and justification of the nec
     - As this chain is designed to be generic and suit different scenarios, proof generation and verification should be built on the DApp side. The blockchain is mainly for storing and sharing proofs in a trustless way.
 
 
+### Demo
+![example usage](img/probo_demo.png)
