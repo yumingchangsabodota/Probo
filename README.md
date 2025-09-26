@@ -14,6 +14,18 @@ Read the [overview](OVERVIEW.md) for the background and justification of the nec
 - **Store Proof**
     - As this chain is designed to be generic and suit different scenarios, proof generation and verification should be built on the DApp side. The blockchain is mainly for storing and sharing proofs in a trustless way.
 
+## Use the below commands to test and run the node
+#### You can find the commands in the `makefile`
+```shell
+test:
+	cargo test -p pallet-issuance-proof -- --nocapture
+
+build:
+	cargo build --release
+
+run:
+	RUST_BACKTRACE=1 ./target/release/solochain-template-node -ldebug --dev
+```
 
 ### Demo
 ![example usage](img/probo_demo.png)
