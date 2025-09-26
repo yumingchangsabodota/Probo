@@ -90,7 +90,7 @@ pub mod pallet {
             expiry_block: U256,
         },
         /// When register as whitelist entity is successful
-        WhitelistEntityRegistered { entity: T::AccountId },
+        WhitelistEntityRegistered { entity: T::AccountId, hold_balance: BalanceOf<T> },
     }
 
     #[pallet::error]
@@ -101,6 +101,8 @@ pub mod pallet {
         NotEnoughFund,
         /// Not whitelist entity
         NotWhitelistEntity,
+        /// Already registered as whitelisted entity
+        IsAlreadyWhitelisted,
     }
 
     #[pallet::call]
@@ -108,7 +110,7 @@ pub mod pallet {
 
         /// Register to become legitimate entity to store proof on chain
         #[pallet::call_index(1)]
-        #[pallet::weight(T::WeightInfo::do_something())]
+        #[pallet::weight(T::WeightInfo::register_entity())]
         pub fn register_entity(origin: OriginFor<T>) -> DispatchResult {
             let who = ensure_signed(origin)?;
             Self::do_register_entity(who)?;
@@ -118,7 +120,7 @@ pub mod pallet {
 
         /// Store proof on chain
         #[pallet::call_index(0)]
-        #[pallet::weight(T::WeightInfo::do_something())]
+        #[pallet::weight(T::WeightInfo::store_proof())]
         pub fn store_proof(
             origin: OriginFor<T>,
             proof: BoundedVec<u8, ConstU32<512>>,
@@ -136,20 +138,26 @@ pub mod pallet {
     impl<T: Config> Pallet<T> {
 
         pub fn do_register_entity(issuer: T::AccountId) -> DispatchResult {
+            // check issuer already whitelisted
+            ensure!(
+                !WhitelistEntity::<T>::contains_key(&issuer),
+                Error::<T>::IsAlreadyWhitelisted
+            );
+            let hold_balance = 1_000_000_000u32;
             // ensure enough balance to hold
-            Self::has_enough_balance(&issuer, 1_000_000_000u32.into())?;
+            Self::has_enough_balance(&issuer, hold_balance.into())?;
             // hold funds
             T::NativeBalance::hold(
                 &HoldReason::WhitelistEntity.into(),
                 &issuer,
-                1_000_000_000u32.into(),
+                hold_balance.into(),
             )?;
 
             // register whitelist entity
             WhitelistEntity::<T>::insert(&issuer, true);
 
             // Emit an event.
-            Self::deposit_event(Event::WhitelistEntityRegistered { entity: issuer });
+            Self::deposit_event(Event::WhitelistEntityRegistered { entity: issuer, hold_balance: hold_balance.into() });
             Ok(())
         }
 

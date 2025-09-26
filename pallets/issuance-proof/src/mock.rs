@@ -8,7 +8,8 @@ use sp_runtime::{
 	traits::{BlakeTwo256, IdentityLookup},
 	BuildStorage,
 };
-use crate::weights::SubstrateWeight;
+
+use crate::weights::IssuanceProofWeightInfo;
 
 type Block = frame_system::mocking::MockBlock<Test>;
 type Balance = u128 ;
@@ -91,7 +92,7 @@ impl pallet_issuance_proof::Config for Test {
     type NativeBalance = Balances;
 	type RuntimeCall = RuntimeCall;
     type RuntimeHoldReason = RuntimeHoldReason;
-    type WeightInfo = SubstrateWeight<Test>;
+    type WeightInfo = IssuanceProofWeightInfo<Test>;
 }
 
 impl Test {

@@ -165,7 +165,7 @@ impl pallet_template::Config for Runtime {
 
 impl pallet_issuance_proof::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
-    type WeightInfo = pallet_issuance_proof::weights::SubstrateWeight<Runtime>;
+    type WeightInfo = pallet_issuance_proof::weights::IssuanceProofWeightInfo<Runtime>;
     type RuntimeHoldReason = RuntimeHoldReason;
     type NativeBalance  = Balances;
     type RuntimeCall = RuntimeCall;

@@ -1,7 +1,7 @@
 build:
 	cargo build --release
 
-run_with_log:
+run:
 	RUST_BACKTRACE=1 ./target/release/solochain-template-node -ldebug --dev
 
 run_with_chain_state:

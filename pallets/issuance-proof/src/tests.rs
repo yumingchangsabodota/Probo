@@ -6,7 +6,7 @@ use frame_support::pallet_prelude::*;
 
 
 #[test]
-fn test_failed_register_entity(){
+fn test_register_entity_not_enough_fund(){
     new_test_ext().execute_with(|| {
         let issuer = Test::create_user_account(0);
         // test fail registration when fund is not enough
@@ -27,6 +27,22 @@ fn test_success_register_entity(){
     });
 }
 
+
+#[test]
+fn test_register_entity_already_whitelisted(){
+    new_test_ext().execute_with(|| {
+        let issuer = Test::create_user_account(0);
+
+        // mint token before register
+        let _ = <mock::Test as pallet::Config>::NativeBalance::mint_into(&issuer, (u32::MAX << 10).into());
+
+        // test registration
+        assert_ok!(Proof::do_register_entity(issuer.clone()));
+
+        // test registration; should fail since it is already whitelisted
+        assert_noop!(Proof::do_register_entity(issuer), Error::<Test>::IsAlreadyWhitelisted);
+    });
+}
 #[test]
 fn test_store_proof_not_whitelist_entity(){
         new_test_ext().execute_with(|| {
