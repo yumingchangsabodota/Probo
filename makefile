@@ -19,3 +19,11 @@ benchmark:
 	--pallet "pallet-issuance-proof" \
 	--extrinsic "" \
 	--output pallets/issuance-proof/src/weights/issuance-proof.rs
+
+test:
+	cargo test -p pallet-issuance-proof -- --nocapture
+
+rustup_switch:
+	rustup default ${version} && \
+	rustup target add wasm32-unknown-unknown --toolchain ${version}-aarch64-apple-darwin && \
+	rustup component add rust-src

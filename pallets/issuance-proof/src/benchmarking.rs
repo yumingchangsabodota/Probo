@@ -10,6 +10,7 @@ use frame_system::RawOrigin;
 use frame::runtime::{prelude::*};
 use scale_info::prelude::vec::Vec;
 
+
 fn create_user_account<T: Config>(seed: u32) -> T::AccountId {
 	let entropy = (b"probo", seed).using_encoded(blake2_256);
 	Decode::decode(&mut TrailingZeroInput::new(entropy.as_ref()))
@@ -28,7 +29,7 @@ mod benchmarks {
         let issuer = create_user_account::<T>(0);
 
         // ensure funds in issuer
-        let _ = T::Balance::mint_into(&issuer, (u32::MAX << 10).into());
+        let _ = T::NativeBalance::mint_into(&issuer, (u32::MAX << 10).into());
 
         #[extrinsic_call]
         register_entity(RawOrigin::Signed(issuer));
@@ -44,7 +45,7 @@ mod benchmarks {
         let issuer = create_user_account::<T>(0);
 
         // ensure funds in issuer
-        let _ = T::Balance::mint_into(&issuer, (u32::MAX << 10).into());
+        let _ = T::NativeBalance::mint_into(&issuer, (u32::MAX << 10).into());
         let _ = Proof::<T>::register_entity(RawOrigin::Signed(issuer.clone()).into());
 
         // generate longest proof

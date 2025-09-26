@@ -22,11 +22,12 @@ pub mod pallet {
     use frame_support::traits::fungible;
     use frame_support::traits::fungible::{Inspect, MutateHold};
     use frame_support::traits::tokens::{Fortitude, Preservation};
-    use frame_support::{pallet_prelude::*};
+    use frame_support::{pallet_prelude::*, dispatch::GetDispatchInfo};
     use frame_system::pallet_prelude::*;
     use sp_core::U256;
+    use sp_runtime::traits::{Dispatchable};
 
-    pub type BalanceOf<T> = <<T as Config>::Balance as fungible::Inspect<
+    pub type BalanceOf<T> = <<T as Config>::NativeBalance as fungible::Inspect<
         <T as frame_system::Config>::AccountId,
     >>::Balance;
 
@@ -40,7 +41,11 @@ pub mod pallet {
         // A type representing the weights required by the dispatchables of this pallet.
         type WeightInfo: WeightInfo;
 
-        type Balance: fungible::Inspect<Self::AccountId>
+        type RuntimeCall: Parameter
+			+ Dispatchable<RuntimeOrigin = Self::RuntimeOrigin>
+			+ GetDispatchInfo;
+
+        type NativeBalance: fungible::Inspect<Self::AccountId>
             + fungible::Mutate<Self::AccountId>
             + fungible::hold::Inspect<Self::AccountId>
             + fungible::hold::Mutate<Self::AccountId, Reason = Self::RuntimeHoldReason>
@@ -101,6 +106,16 @@ pub mod pallet {
     #[pallet::call]
     impl<T: Config> Pallet<T> {
 
+        /// Register to become legitimate entity to store proof on chain
+        #[pallet::call_index(1)]
+        #[pallet::weight(T::WeightInfo::do_something())]
+        pub fn register_entity(origin: OriginFor<T>) -> DispatchResult {
+            let who = ensure_signed(origin)?;
+            Self::do_register_entity(who)?;
+
+            Ok(())
+        }
+
         /// Store proof on chain
         #[pallet::call_index(0)]
         #[pallet::weight(T::WeightInfo::do_something())]
@@ -116,18 +131,37 @@ pub mod pallet {
             Ok(())
         }
 
-        /// Register to become legitimate entity to store proof on chain
-        #[pallet::call_index(1)]
-        #[pallet::weight(T::WeightInfo::do_something())]
-        pub fn register_entity(origin: OriginFor<T>) -> DispatchResult {
-            let who = ensure_signed(origin)?;
-            Self::do_register_entity(who)?;
-
-            Ok(())
-        }
     }
 
     impl<T: Config> Pallet<T> {
+
+        pub fn do_register_entity(issuer: T::AccountId) -> DispatchResult {
+            // ensure enough balance to hold
+            Self::has_enough_balance(&issuer, 1_000_000_000u32.into())?;
+            // hold funds
+            T::NativeBalance::hold(
+                &HoldReason::WhitelistEntity.into(),
+                &issuer,
+                1_000_000_000u32.into(),
+            )?;
+
+            // register whitelist entity
+            WhitelistEntity::<T>::insert(&issuer, true);
+
+            // Emit an event.
+            Self::deposit_event(Event::WhitelistEntityRegistered { entity: issuer });
+            Ok(())
+        }
+
+        fn has_enough_balance(issuer: &T::AccountId, amount: BalanceOf<T>) -> DispatchResult {
+            let reducible =
+                T::NativeBalance::reducible_balance(issuer, Preservation::Preserve, Fortitude::Polite);
+            if reducible < amount {
+                return Err(Error::<T>::NotEnoughFund.into());
+            }
+            Ok(())
+        }
+
         pub fn do_store_proof(
             issuer: T::AccountId,
             proof: BoundedVec<u8, ConstU32<512>>,
@@ -155,33 +189,6 @@ pub mod pallet {
                 issuer,
                 expiry_block,
             });
-            Ok(())
-        }
-
-        pub fn do_register_entity(issuer: T::AccountId) -> DispatchResult {
-            // ensure enough balance to hold
-            Self::has_enough_balance(&issuer, 1_000_000_000u32.into())?;
-            // hold funds
-            T::Balance::hold(
-                &HoldReason::WhitelistEntity.into(),
-                &issuer,
-                1_000_000_000u32.into(),
-            )?;
-
-            // register whitelist entity
-            WhitelistEntity::<T>::insert(&issuer, true);
-
-            // Emit an event.
-            Self::deposit_event(Event::WhitelistEntityRegistered { entity: issuer });
-            Ok(())
-        }
-
-        fn has_enough_balance(issuer: &T::AccountId, amount: BalanceOf<T>) -> DispatchResult {
-            let reducible =
-                T::Balance::reducible_balance(issuer, Preservation::Preserve, Fortitude::Polite);
-            if reducible < amount {
-                return Err(Error::<T>::NotEnoughFund.into());
-            }
             Ok(())
         }
 

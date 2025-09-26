@@ -39,23 +39,7 @@ mod runtime {
 	pub type Balances = pallet_balances::Pallet<Runtime>;
 
 	#[runtime::pallet_index(2)]
-	pub type IssuanceProof = pallet_issuance_proof::Pallet<Runtime>;
-}
-
-#[derive_impl(pallet_balances::config_preludes::TestDefaultConfig)]
-impl pallet_balances::Config for Test {
-	type Balance = Balance;
-	type DustRemoval = ();
-	type RuntimeEvent = RuntimeEvent;
-	type ExistentialDeposit = ConstU128<1>;
-	type AccountStore = System;
-	type WeightInfo = ();
-	type MaxLocks = ConstU32<10>;
-	type MaxReserves = ();
-	type ReserveIdentifier = [u8; 8];
-	type RuntimeHoldReason = RuntimeHoldReason;
-	type FreezeIdentifier = ();
-	type MaxFreezes = ConstU32<10>;
+	pub type Proof = pallet_issuance_proof::Pallet<Runtime>;
 }
 
 #[derive_impl(frame_system::config_preludes::TestDefaultConfig)]
@@ -85,13 +69,38 @@ impl frame_system::Config for Test {
 	type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
+#[derive_impl(pallet_balances::config_preludes::TestDefaultConfig)]
+impl pallet_balances::Config for Test {
+	type Balance = Balance;
+	type DustRemoval = ();
+	type RuntimeEvent = RuntimeEvent;
+	type ExistentialDeposit = ConstU128<1>;
+	type AccountStore = System;
+	type WeightInfo = ();
+	type MaxLocks = ConstU32<10>;
+	type MaxReserves = ();
+	type ReserveIdentifier = [u8; 8];
+	type RuntimeHoldReason = RuntimeHoldReason;
+	type FreezeIdentifier = ();
+	type MaxFreezes = ConstU32<10>;
+}
+
+
 impl pallet_issuance_proof::Config for Test {
     type RuntimeEvent = RuntimeEvent;
-    type Balance = Balances;
+    type NativeBalance = Balances;
+	type RuntimeCall = RuntimeCall;
     type RuntimeHoldReason = RuntimeHoldReason;
     type WeightInfo = SubstrateWeight<Test>;
 }
 
+impl Test {
+    pub fn create_user_account(seed: u32) -> <Test as frame_system::Config>::AccountId {
+	let entropy = (b"probo", seed).using_encoded(blake2_256);
+	Decode::decode(&mut TrailingZeroInput::new(entropy.as_ref()))
+			.expect("infinite length input; no invalid inputs for type; qed")
+}
+}
 
 pub fn new_test_ext() -> sp_io::TestExternalities {
 	frame_system::GenesisConfig::<Test>::default().build_storage().unwrap().into()
