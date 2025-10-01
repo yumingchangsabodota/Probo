@@ -76,6 +76,10 @@ pub fn development_config_genesis() -> Value {
                 .unwrap(),
             AccountId32::from_ss58check("5EXYZWhrkugFWk4tfBqh3XRrd7Q8d73H16VYQowhyaeWkM64")
                 .unwrap(),
+            AccountId32::from_ss58check("5ENTBGBaspufRn9At59SWhNGPwmS7qnv74dewD666G4TgKxo")
+                .unwrap(),
+            AccountId32::from_ss58check("5E7T76WGD5CsLqZKFDmWst2QLDBrtHHPJze7nAnLq4wKeH8q")
+                .unwrap(),
         ],
         sp_keyring::Sr25519Keyring::Alice.to_account_id(),
     )
