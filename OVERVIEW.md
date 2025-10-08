@@ -22,11 +22,11 @@ The proof storage process follows these steps:
 
 The verification process enables secure document authentication:
 
-1. **Data Collection**: The verifying entity receives necessary data and the signed message hash from the user in person
-2. **Public Key Retrieval**: The entity retrieves the issuing entity's public key from the blockchain using the signed message hash
-3. **Hash Reconstruction**: The data hash is reconstructed using the retrieved public key ***(performed in dApp)***
-4. **Signature Decryption**: The signed message is decrypted using the public key ***(performed in dApp)***
-5. **Hash Verification**: The system confirms authenticity by checking that the decrypted hash matches the reconstructed hash ***(performed in dApp)***
+1. **Data Collection**: The verifying entity receives raw document inputs (e.g., ID, passport number) and the signature proof from the user in person
+2. **Proof Metadata Retrieval**: The entity retrieves the issuing entity's public key from the blockchain using the signature proof
+3. **Data Encryption**: The raw inputs are encrypted using the retrieved public key ***(performed in dApp)***
+4. **Hash Generation**: A hash is generated from the encrypted data ***(performed in dApp)***
+5. **Signature Verification**: Using the issuing entity's public key and the generated hash, the system verifies that the signature proof was created by the corresponding private key ***(performed in dApp)***
 
 ### Diagram
 
@@ -42,11 +42,11 @@ flowchart TB
 
     subgraph VERIFY ["🔍 Verification Process"]
         direction LR
-        F[User Presents Data<br/>+ Signature Hash] --> G[Retrieve Public Key<br/>from Blockchain]
-        G --> H[Reconstruct Data Hash<br/>***dApp***]
-        H --> I[Decrypt Signed Message<br/>***dApp***]
-        I --> J[Verify Hash Match<br/>***dApp***]
-        J --> K{Hashes Match?}
+        F[User Presents Raw Inputs<br/>+ Signature Proof] --> G[Retrieve Public Key<br/>from Blockchain]
+        G --> H[Encrypt Raw Inputs<br/>***dApp***]
+        H --> I[Generate Hash from<br/>Encrypted Data<br/>***dApp***]
+        I --> J[Verify Signature<br/>using Public Key & Hash<br/>***dApp***]
+        J --> K{Signature Valid?}
         K -->|Yes| L[Document Verified ✓]
         K -->|No| M[Verification Failed ✗]
     end
@@ -160,12 +160,11 @@ The framework operates on composite document hashing and digital signatures, whe
 1. **Data Encryption & Hash Generation**: The issuing entity first encrypts each individual document attribute (visa number, passport number, issuing entity ID, etc.) using their own public key, then combines these encrypted values and processes them through cryptographic hash functions with collision-resistant properties
 2. **Signature Creation**: The entity signs this hash using their private key through a dapp interface, creating a digital signature (proof)
 3. **Blockchain Storage**: Only the signed proof, the entity's public key, and validation temporal data are stored on the blockchain - not the original document data
-4. **Verification Process**: When document verification is required, the validating entity follows these steps:
-   - Encrypts each received document attribute (visa number, passport number, etc.) using the issuing entity's public key
-   - Combines the encrypted values and reconstructs the document hash
-   - Retrieves the issuing entity's public key from the blockchain using the stored signature
-   - Decrypts the signature with the public key to extract the original signed hash
-   - Confirms document authenticity by verifying that both hashes match
+4. **Verification Process**: When document verification is required, the validating entity receives raw document inputs and the signature proof from the user, then follows these steps:
+   - Retrieves the issuing entity's public key from the blockchain using the signature proof
+   - Encrypts each received raw document attribute (visa number, passport number, etc.) using the retrieved public key
+   - Combines the encrypted values and generates the document hash
+   - Uses the public key, generated hash, and signature proof to cryptographically verify that the signature was created by the issuing entity's private key
    - Validates the proof's temporal metadata stored on the blockchain to ensure the document remains valid and has not expired
 
 This cryptographic approach follows established public key cryptography principles, such as the RSA digital signature scheme (Rivest, Shamir, and Adleman, 1977), ensuring that verification can occur without exposing sensitive document details while maintaining mathematical proof of authenticity.
@@ -184,16 +183,11 @@ The proposed architecture extends beyond travel document verification to encompa
 
 **Academic Credential Verification Case Study**: Consider a scenario where University P in Country A issues a bachelor's degree to a recipient who subsequently seeks authentication through a two-step verification process:
 
-**Step 1 - Department of Education Verification**: Country A's Department of Education validates the university credential and creates a blockchain proof incorporating:
-- University identifier hash and degree certificate hash
-- Recipient's identity document hash
-- Department of Education authentication signature
+**Step 1 - Department of Education Verification**: Country A's Department of Education receives the raw credential data (university identifier, degree certificate number, recipient's identity document) from the recipient, encrypts this data using their public key, generates a hash, and signs it with their private key to create a blockchain proof.
 
-**Step 2 - Embassy Validation**: Country B's embassy verifies the Department of Education's proof and creates an additional blockchain proof that includes:
-- Reference to the Department of Education's blockchain proof
-- Embassy validation signature
+**Step 2 - Embassy Validation**: Country B's embassy receives the raw credential data and the Department of Education's signature proof from the recipient. The embassy retrieves the Department of Education's public key from the blockchain using the signature, encrypts the raw data with this public key, generates a hash, and verifies the Department of Education's signature. Upon successful verification, the embassy creates their own signature proof referencing the Department of Education's proof.
 
-Upon the recipient's arrival in Country B, local authorities can cryptographically verify both proofs sequentially: first confirming the Department of Education's authentication, then validating the embassy's endorsement. This dual-verification approach provides enhanced security through multiple institutional validations while eliminating the need for direct institutional communication.
+**Final Verification**: Upon the recipient's arrival in Country B, the recipient presents raw credential data and both signature proofs to local authorities. The authorities verify both signatures sequentially: first retrieving the Department of Education's public key and verifying their signature, then retrieving the embassy's public key and verifying the embassy's endorsement. This dual-verification approach provides enhanced security through multiple institutional validations while eliminating the need for direct institutional communication.
 
 
 ## Justification
