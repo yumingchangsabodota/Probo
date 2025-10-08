@@ -3,7 +3,12 @@
 
 Probo is a PoC blockchain for secure, privacy-preserving document verification across borders. The system stores cryptographic proofs instead of raw document data, enabling real-time authentication without exposing sensitive information or requiring centralized authorities.
 
-Read the [overview](OVERVIEW.md) for the background and justification of the necessity of such blockchain system.
+Please read the [overview](OVERVIEW.md) for the background and justification of the necessity of such blockchain system.
+
+## ProboDapp
+ProboDapp is a demo project for the integration with Probo Blockchain.
+User can register as whitelisted entity, store signed proof of documents, and verify the documents with signature.
+[ProboDapp](https://github.com/yumingchangsabodota/ProboDapp)
 
 
 ## Main Functionalities

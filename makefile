@@ -4,6 +4,9 @@ build:
 run:
 	RUST_BACKTRACE=1 ./target/release/solochain-template-node -ldebug --dev
 
+run_no_backtrace:
+	./target/release/solochain-template-node --dev
+
 run_with_chain_state:
 	./target/release/solochain-template-node --dev --base-path ./my-chain-state/
 
